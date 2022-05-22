@@ -2,6 +2,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import authRoute from "./routes/auth.js";
 
 dotenv.config();
 const app = express();
@@ -24,7 +25,8 @@ mongoose.connection.on("connected", () => {
   console.log("MongoDB connected!");
 });
 
-
+//middlewares
+app.use("/auth", authRoute);
 
 //Actual connection
 app.listen(3000, () => {
