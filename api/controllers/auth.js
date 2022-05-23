@@ -4,6 +4,8 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 //Importing error
 import { createError } from "../utils/error.js";
+//Adding json Web token to identify if the user is an admin or not
+import jwt from "jsonwebtoken";
 
 export const register = async (req, res, next) => {
   try {
@@ -39,9 +41,20 @@ export const login = async (req, res, next) => {
     if (!passwordCheck)
       return next(createError(400, "Wrong Password or Username!"));
 
+    //checking if user is admin
+    const token = jwt.sign(
+      { id: user._id, isAdmin: user.isAdmin },
+      process.env.JWT
+    );
+
     //To prevent the password from sending to the front end we restructure the api and what gets sent
     const { password, isAdmin, ...otherDetails } = user._doc; // This setup hid password, isAdmin from api call in other details. Had to = user._doc so it brings only that up with the items hidden
-    res.status(200).json({ ...otherDetails });
+    res
+      .cookie("access_token", token, {
+        httpOnly: true, //this is for security
+      })
+      .status(200)
+      .json({ ...otherDetails });
   } catch (err) {
     next(err);
   }
