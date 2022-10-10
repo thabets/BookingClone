@@ -22,6 +22,7 @@ export const updateHotel = async (req, res, next) => {
       {
         $set: req.body,
       },
+      //we use new to refresh server and show result 
       {
         new: true,
       }
